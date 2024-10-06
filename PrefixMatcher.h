@@ -9,16 +9,18 @@ class TrieNode {
 public:
     std::unordered_map<char, TrieNode*> children;
     bool isEndOfWord;
+    int routerId;
 
-    TrieNode() : isEndOfWord(false) {}
+    TrieNode() : isEndOfWord(false), routerId(-1) {}
 };
 
 class PrefixMatcher {
 public:
     PrefixMatcher();
     ~PrefixMatcher();
-    void insert(const std::string& word);
+    void insert(const std::string& word, int routerId);
     std::vector<std::string> getSuggestions(const std::string& partialWord);
+    int selectRouter(const std::string& prefix);
 
 private:
     TrieNode* root;

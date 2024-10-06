@@ -10,8 +10,8 @@ PrefixMatcher::~PrefixMatcher() {
     clearTrie(root);
 }
 
-// Insert a word into the Trie
-void PrefixMatcher::insert(const std::string& word) {
+// Insert a word into the Trie with a router ID
+void PrefixMatcher::insert(const std::string& word, int routerId) {
     TrieNode* currentNode = root;
     for (char ch : word) {
         if (currentNode->children.find(ch) == currentNode->children.end()) {
@@ -20,6 +20,7 @@ void PrefixMatcher::insert(const std::string& word) {
         currentNode = currentNode->children[ch];
     }
     currentNode->isEndOfWord = true;
+    currentNode->routerId = routerId;
 }
 
 // Get suggestions for a prefix
@@ -34,6 +35,22 @@ std::vector<std::string> PrefixMatcher::getSuggestions(const std::string& partia
     }
     findWordsFromNode(currentNode, partialWord, suggestions);
     return suggestions;
+}
+
+// Select the router ID for the longest matching prefix
+int PrefixMatcher::selectRouter(const std::string& prefix) {
+    TrieNode* currentNode = root;
+    int lastRouterId = -1;
+    for (char ch : prefix) {
+        if (currentNode->children.find(ch) == currentNode->children.end()) {
+            break;
+        }
+        currentNode = currentNode->children[ch];
+        if (currentNode->isEndOfWord) {
+            lastRouterId = currentNode->routerId;
+        }
+    }
+    return lastRouterId;
 }
 
 // Helper function to find all words from a given node
